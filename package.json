@@ -2,7 +2,7 @@
     "name": "epitools",
     "main": "./lib/epitools",
     "version": "0.0.0",
-    "description": "A short description of your package",
+    "description": "All you need for C coding in epitech",
     "keywords": [],
     "repository": "https://github.com/atom/epitools",
     "license": "MIT",

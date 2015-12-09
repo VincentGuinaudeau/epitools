@@ -1,8 +1,8 @@
-EpitoolsView = require './epitools-status-view'
+EpitoolsStatusView = require './epitools-status-view'
 {CompositeDisposable} = require 'atom'
 
 module.exports = Epitools =
-    epitoolsView: null
+    epitoolsStatusView: null
     subscriptions: null
 
     activate: (@state) ->
@@ -11,23 +11,30 @@ module.exports = Epitools =
 
         # Register command that toggles this view
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle': => @toggle()
+        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle-activation': => @toggle_activation()
 
     consumeStatusBar: (statusBar) ->
         console.log 'status-bar'
-        @epitoolsView = new EpitoolsView(@state.epitoolsViewState, statusBar)
+        @epitoolsStatusView = new EpitoolsStatusView(@state.epitoolsStatusViewState, statusBar)
 
     deactivate: ->
         @subscriptions.dispose()
         @statusBarTile.destroy()
-        @epitoolsView.destroy()
+        @epitoolsStatusView.destroy()
 
     serialize: ->
-        epitoolsViewState: @epitoolsView.serialize()
+        epitoolsStatusViewState: @epitoolsStatusView.serialize()
 
     toggle: ->
         console.log 'Epitools was toggled!'
-
-        if @epitoolsView.visible
-            @epitoolsView.hide()
+        if @epitoolsStatusView.visible
+            @epitoolsStatusView.hide()
         else
-            @epitoolsView.show()
+            @epitoolsStatusView.show()
+
+    toggle_activation: ->
+        console.log 'Epitools was activated!'
+        if @epitoolsStatusView.active
+            @epitoolsStatusView.turn_off()
+        else
+            @epitoolsStatusView.turn_on()

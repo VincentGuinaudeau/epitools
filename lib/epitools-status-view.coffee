@@ -1,19 +1,16 @@
 module.exports =
 class EpitoolsView
     visible: false
-    active: false
-
-    # @content: ->
-    #     @div class: 'epitools-status', =>
-    #         @img class: 'epitools-logo', src 'epitech.ico'
+    active: true
 
     constructor: (state, @statusBar) ->
-        @element = document.createElement 'img'
-        @element.classList.add 'epitools-logo'
-        @element.src = __dirname + '/epi64.ico'
-        @element.height = 16
-        @element.width = 16
-        # Create root element
+        @visible = state?.visible
+        @active = state?.active
+        @element = document.createElement 'div'
+        @element.classList.add 'inline-block'
+        @element.classList.add 'epitools-status'
+        @element.classList.add if @active then 'epitools-active' else 'epitools-inactive'
+        @show() if @visible
 
     show: ->
         @visible = true
@@ -25,12 +22,18 @@ class EpitoolsView
 
     turn_on: ->
         @active = true
+        @element.classList.remove 'epitools-inactive'
+        @element.classList.add 'epitools-active'
 
     turn_off: ->
         @active = false
+        @element.classList.remove 'epitools-active'
+        @element.classList.add 'epitools-inactive'
 
     # Returns an object that can be retrieved when package is activated
     serialize: ->
+        visible: @visible
+        active: @active
 
     # Tear down any state and detach
     destroy: ->
