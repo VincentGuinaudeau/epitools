@@ -3,7 +3,7 @@
     "main": "./lib/epitools",
     "version": "0.0.0",
     "description": "All you need for C coding in epitech",
-    "keywords": [],
+    "keywords": ["epitech"],
     "repository": "https://github.com/atom/epitools",
     "license": "MIT",
     "engines": {
