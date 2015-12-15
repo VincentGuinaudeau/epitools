@@ -46,7 +46,7 @@ module.exports = Epitools =
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
-        if editor.id # TODO : propely detect if it's a TextEditor
+        if editor?.id # TODO : propely detect if it's a TextEditor
             @scope = editor.getRootScopeDescriptor().scopes[0]
             console.log @scope
             ['source.c', 'source.makefile'].indexOf(@scope) isnt -1

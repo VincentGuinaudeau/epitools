@@ -1,11 +1,11 @@
 module.exports =
 class EpitoolsView
     visible: false
-    active: true
+    active: false
 
     constructor: (state, @statusBar) ->
-        @visible = state?.visible
-        @active = state?.active
+        @visible = state?.visible or false
+        @active = state?.active or false
         @element = document.createElement 'div' # TODO : marging to don't be to close of the left element
         @element.classList.add 'inline-block'
         @element.classList.add 'epitools-status'
@@ -20,9 +20,12 @@ class EpitoolsView
         @visible = false
         @statusBarTile.destroy()
 
-    set_visible: (visible) ->
-        if (visible != @visible)
+    set_visible: (visible = false) ->
+        console.log visible, @visible
+        if visible != @visible
+            console.log 'passed'
             if visible then @show() else @hide()
+            @visible = visible
 
     turnOn: ->
         @active = true
@@ -34,9 +37,10 @@ class EpitoolsView
         @element.classList.remove 'epitools-active'
         @element.classList.add 'epitools-inactive'
 
-    set_active: (active) ->
-        if (active != @active)
+    set_active: (active = false) ->
+        if active != @active
             if active then @turnOn() else @turnOff()
+            @active = active
 
     # Returns an object that can be retrieved when package is activated
     serialize: ->
