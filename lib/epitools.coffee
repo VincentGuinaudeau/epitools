@@ -1,4 +1,7 @@
 EpitoolsStatusView = require './epitools-status-view'
+EpitoolsModules = [
+    new (require './epitools-headers')()
+]
 {CompositeDisposable} = require 'atom'
 
 module.exports = Epitools =
@@ -20,9 +23,14 @@ module.exports = Epitools =
         @subscriptions.add atom.workspace.onDidChangeActivePaneItem @refresh.bind(this)
         @refresh atom.workspace.getActivePaneItem()
 
-        # Register command that toggles this view
+        # Register command
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle-available': => @toggleAvailable()
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle-activation': => @toggleActivation()
+
+        # init modules
+        for i in EpitoolsModules
+            i.activate @subscriptions
+        console.log EpitoolsModules
 
     consumeStatusBar: (statusBar) ->
         @epitoolsStatusViewState = new EpitoolsStatusView(@state.epitoolsStatusViewState, statusBar)
@@ -40,19 +48,19 @@ module.exports = Epitools =
             @availableMap.set editor, @isAvailable
             @isActive = if @isAvailable then @isTurnOn editor else false
             @activeMap.set editor, @isActive
-        console.log 'refreshing...', @isAvailable, @isActive
         @epitoolsStatusViewState?.set_visible @isAvailable
         @epitoolsStatusViewState?.set_active @isActive
+        for i in EpitoolsModules
+            i.refresh editor, @isActive if i.refresh
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
-        if editor?.id # TODO : propely detect if it's a TextEditor
+        if editor.id # TODO : propely detect if it's a TextEditor
             @scope = editor.getRootScopeDescriptor().scopes[0]
-            console.log @scope
-            ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
-        else
-            @scope = ''
-            false
+            if ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
+                return @scope
+        @scope = ''
+        false
 
     isTurnOn: (editor) ->
         false # TODO : detect header, config
