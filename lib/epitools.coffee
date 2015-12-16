@@ -29,7 +29,7 @@ module.exports = Epitools =
 
         # init modules
         for i in EpitoolsModules
-            i.activate @subscriptions
+            i.activate @state[i]
         console.log EpitoolsModules
 
     consumeStatusBar: (statusBar) ->
@@ -71,7 +71,7 @@ module.exports = Epitools =
         @epitoolsStatusView.destroy()
 
     serialize: ->
-        isActive: @isActive
+        isAvailable: @isAvailable
         isActive: @isActive
         epitoolsStatusViewState: @epitoolsStatusView.serialize()
 
