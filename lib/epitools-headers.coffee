@@ -1,5 +1,5 @@
 {CompositeDisposable} = require 'atom'
-headers = require './headers-format'
+# headers = require './headers-format.cson' # TODO : load a cson file
 
 module.exports =
 class EpitoolsHeaders

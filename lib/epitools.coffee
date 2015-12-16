@@ -2,7 +2,7 @@ EpitoolsStatusView = require './epitools-status-view'
 EpitoolsModules = [
     new (require './epitools-headers')()
 ]
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, TextEditor} = require 'atom'
 
 module.exports = Epitools =
     epitoolsStatusView: null
@@ -55,7 +55,7 @@ module.exports = Epitools =
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
-        if editor.id # TODO : propely detect if it's a TextEditor
+        if editor instanceof TextEditor
             @scope = editor.getRootScopeDescriptor().scopes[0]
             if ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
                 return @scope

@@ -4,15 +4,15 @@
 
 'text': [
     ' $FILE_NAME for $PROJECT in $PATH',
-    ' ', # yes, there a space here
+    ' ',
     ' Made by $USER_NAME',
     ' Login  $USER_LOGIN <$USER_EMAIL>',
-    ' ', # and here too
+    ' ',
     ' Started on  $DATE $USER_NAME',
     ' Last update $DATE $USER_NAME'
 ],
 'date_format': 'MM DD, YYYY H:MI:SS TT YYYY',
-'month_names': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+'month_names': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
 'scopes':
     'source.c':
         'head': '/*',
