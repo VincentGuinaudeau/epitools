@@ -1,25 +1,35 @@
 {
-  "name": "epitools",
-  "main": "./lib/epitools",
-  "version": "0.1.0",
-  "description": "All you need for C coding in epitech",
-  "keywords": [
-    "epitech",
-    "headers",
-    "indentation",
-    "c"
-  ],
-  "repository": "https://github.com/VincentGuinaudeau/epitools",
-  "license": "MIT",
-  "engines": {
-    "atom": ">=1.0.0 <2.0.0"
-  },
-  "dependencies": {},
-  "consumedServices": {
-    "status-bar": {
-      "versions": {
-        "^1.0.0": "consumeStatusBar"
-      }
+    "name": "epitools",
+    "main": "./lib/epitools",
+    "version": "0.1.0",
+    "description": "All you need for C coding in epitech",
+    "keywords": ["epitech", "headers", "indentation", "c"],
+    "repository": "https://github.com/VincentGuinaudeau/epitools",
+    "license": "MIT",
+    "engines": {
+        "atom": ">=1.0.0 <2.0.0"
+    },
+    "dependencies": {},
+    "consumedServices": {
+        "status-bar": {
+            "versions": {
+                "^1.0.0": "consumeStatusBar"
+            }
+        }
+    },
+    "coffeelintConfig": {
+        "indentation": {
+            "level": "warn",
+            "value": 4
+        },
+        "line_endings": {
+            "level": "ignore"
+        },
+        "max_line_length": {
+            "level": "ignore"
+        },
+        "braces_spacing": {
+            "level": "warn"
+        }
     }
-  }
 }

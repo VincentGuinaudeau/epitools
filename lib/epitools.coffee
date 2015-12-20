@@ -2,7 +2,7 @@ EpitoolsStatusView = require './epitools-status-view'
 EpitoolsModules = [
     new (require './epitools-headers')()
 ]
-{CompositeDisposable} = require 'atom'
+{CompositeDisposable, TextEditor} = require 'atom'
 
 module.exports = Epitools =
     epitoolsStatusView: null
@@ -37,10 +37,16 @@ module.exports = Epitools =
         @epitoolsStatusViewState.set_visible @available
         @epitoolsStatusViewState.set_active @active
 
+    getEditor: (editor) ->
+        editor = atom.workspace.getActivePaneItem() if not editor
+        editor instanceof TextEditor
 
     # active the package if the editor have a C grammar activate
     refresh: (editor) ->
-        if @availableMap.has editor
+        if not (editor = @getEditor editor)
+            @isAvailable = false
+            @isActive = false
+        else if @availableMap.has editor
             @isAvailable = @availableMap.get editor
             @isActive = @activeMap.get editor
         else
@@ -55,7 +61,7 @@ module.exports = Epitools =
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
-        if editor.id # TODO : propely detect if it's a TextEditor
+        if editor instanceof TextEditor
             @scope = editor.getRootScopeDescriptor().scopes[0]
             if ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
                 return @scope
@@ -72,7 +78,7 @@ module.exports = Epitools =
 
     serialize: ->
         isActive: @isActive
-        isActive: @isActive
+        isAvailable: @isAvailable
         epitoolsStatusViewState: @epitoolsStatusView.serialize()
 
     deserialize: ->

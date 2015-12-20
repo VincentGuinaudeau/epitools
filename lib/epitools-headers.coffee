@@ -17,3 +17,6 @@ class EpitoolsHeaders
     insert_header_top: ->
 
     insert_header_cursor: ->
+        editor = atom.workspace.getActivePaneItem()
+        if ()
+        pos = editor.getCursorScreenPosition()
