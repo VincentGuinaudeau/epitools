@@ -1,22 +1,28 @@
+{CompositeDisposable} = require 'atom'
+# headers = require './headers-format.cson' # TODO : load a cson file
+
 module.exports =
 class EpitoolsHeaders
-    activate: (subscriptions) ->
-        console.log 'activate'
+    activate: (state) ->
+        @subscriptions = new CompositeDisposable
         # Register command
-        subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insert_header_top()
-        subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insert_header_cursor()
+        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
+        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insertHeaderCursor()
 
     refresh: (editor, activate) ->
 
-    has_header: (editor) ->
+    hasHeader: (editor) ->
 
-    generate_header: (editor) ->
+    updateHeader: (editor) ->
 
-    insert_header: (pos) ->
+    generateHeader: (editor) ->
 
-    insert_header_top: ->
 
-    insert_header_cursor: ->
+    insertHeader: (pos) ->
+
+    insertHeaderTop: ->
+
+    insertHeaderCursor: ->
         editor = atom.workspace.getActivePaneItem()
         if ()
         pos = editor.getCursorScreenPosition()

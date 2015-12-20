@@ -3,7 +3,12 @@
     "main": "./lib/epitools",
     "version": "0.1.0",
     "description": "All you need for C coding in epitech",
-    "keywords": ["epitech", "headers", "indentation", "c"],
+    "keywords": [
+        "epitech",
+        "headers",
+        "indentation",
+        "c"
+    ],
     "repository": "https://github.com/VincentGuinaudeau/epitools",
     "license": "MIT",
     "engines": {
