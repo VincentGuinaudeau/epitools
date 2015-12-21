@@ -4,17 +4,15 @@ EpitoolsModules = [
 ]
 {CompositeDisposable, TextEditor} = require 'atom'
 
-module.exports = Epitools =
+module.exports =
     epitoolsStatusView: null
     subscriptions: null
     isAvailable: null
     isActive: null
-    availableMap: null
-    activeMap: null
+    editorMap: null
 
     activate: (@state) ->
-        @availableMap = new WeakMap
-        @activeMap = new WeakMap
+        @editorMap = new WeakMap
         @deserialize()
 
         # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
@@ -29,25 +27,36 @@ module.exports = Epitools =
 
         # init modules
         for i in EpitoolsModules
-            i.activate @state[i]
-        console.log EpitoolsModules
+            i.activate @state[i], this
 
     consumeStatusBar: (statusBar) ->
-        @epitoolsStatusViewState = new EpitoolsStatusView(@state.epitoolsStatusViewState, statusBar)
+        @epitoolsStatusViewState = new EpitoolsStatusView @state.epitoolsStatusViewState, statusBar
         @epitoolsStatusViewState.set_visible @available
         @epitoolsStatusViewState.set_active @active
 
+    isValid: (editor) ->
+        editor instanceof TextEditor
+
+    setMap: (editor, attribute, value) ->
+        obj = @editorMap.get editor
+        obj[attribute] = value
 
     # active the package if the editor have a C grammar activate
     refresh: (editor) ->
-        if @availableMap.has editor
-            @isAvailable = @availableMap.get editor
-            @isActive = @activeMap.get editor
-        else
+        if @editorMap.has editor
+            {isAvailable, isActive} = @editorMap.get editor
+            console.log isAvailable, isActive
+            @isAvailable = isAvailable
+            @isActive = isActive
+        else if @isValid editor
             @isAvailable = @detectGrammar editor
-            @availableMap.set editor, @isAvailable
             @isActive = if @isAvailable then @isTurnOn editor else false
-            @activeMap.set editor, @isActive
+            @editorMap.set editor,
+                isAvailable: @isAvailable
+                isActive: @isActive
+        else
+            @isAvailable = false
+            @isActive = false
         @epitoolsStatusViewState?.set_visible @isAvailable
         @epitoolsStatusViewState?.set_active @isActive
         for i in EpitoolsModules
@@ -55,12 +64,11 @@ module.exports = Epitools =
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
-        if editor instanceof TextEditor
-            @scope = editor.getRootScopeDescriptor().scopes[0]
-            if ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
-                return @scope
-        @scope = ''
-        false
+        @scope = editor.getRootScopeDescriptor().scopes[0]
+        if ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
+            @scope
+        else
+            false
 
     isTurnOn: (editor) ->
         false # TODO : detect header, config
@@ -80,12 +88,16 @@ module.exports = Epitools =
         @isActive = @state?.isActive
 
     toggleAvailable: (force_state = null) ->
+        editor = atom.workspace.getActivePaneItem()
+        return null if not @isValid editor
         @isAvailable = if force_state is null then !@isAvailable else force_state
-        @availableMap.set atom.workspace.getActivePaneItem(), @isAvailable
+        @setMap editor, 'isAvailable', @isAvailable
         @epitoolsStatusViewState.set_active @isAvailable
 
     toggleActivation: (force_state = null) ->
+        editor = atom.workspace.getActivePaneItem()
+        return null if not @isValid editor
         if @isAvailable
             @isActive = if force_state is null then !@isActive else force_state
-            @activeMap.set atom.workspace.getActivePaneItem(), @isActive
+            @setMap editor, 'isActive', @isActive
             @epitoolsStatusViewState.set_active @isActive

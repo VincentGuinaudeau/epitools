@@ -4,8 +4,9 @@ headersFormat = require './headers-format.json'
 
 module.exports =
 class EpitoolsHeaders
-    activate: (state) ->
-        console.log headersFormat
+    core: null
+
+    activate: (state, @core) ->
         @subscriptions = new CompositeDisposable
         # Register command
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
@@ -58,12 +59,12 @@ class EpitoolsHeaders
 
     insertHeaderTop: ->
         editor = atom.workspace.getActivePaneItem()
-        return null if editor not instanceof TextEditor
+        return null if (editor not instanceof TextEditor) or not @core.isActive
         @insertHeader atom.workspace.getActivePaneItem(), [0, 0]
 
     insertHeaderCursor: ->
         editor = atom.workspace.getActivePaneItem()
-        return null if editor not instanceof TextEditor
+        return null if (editor not instanceof TextEditor) or not @core.isActive
         posTab = editor.getCursorBufferPositions()
         for point in posTab
             @insertHeader editor, point
