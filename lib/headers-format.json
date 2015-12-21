@@ -5,8 +5,8 @@
         "Made by $USER_NAME",
         "Login  $USER_LOGIN <$USER_EMAIL>",
         "",
-        "Started on  $DATE $USER_NAME $USER_NAME",
-        "Last update $DATE $USER_NAME $USER_NAME"
+        "Started on  $DATE $USER_NAME",
+        "Last update $DATE $USER_NAME"
     ],
     "updateLine": 7,
     "datesFormat": "MM DD HH:MI:SS YYYY",

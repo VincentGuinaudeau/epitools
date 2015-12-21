@@ -5,6 +5,20 @@ EpitoolsModules = [
 {CompositeDisposable, TextEditor} = require 'atom'
 
 module.exports =
+    config:
+        headers:
+            type: 'object'
+            properties:
+                name:
+                    type: 'string'
+                    default: ''
+                    description: 'format : Firstname Name'
+                login:
+                    type: 'string'
+                    default: ''
+                email:
+                    type: 'string'
+                    default: ''
     epitoolsStatusView: null
     subscriptions: null
     isAvailable: null
@@ -45,7 +59,6 @@ module.exports =
     refresh: (editor) ->
         if @editorMap.has editor
             {isAvailable, isActive} = @editorMap.get editor
-            console.log isAvailable, isActive
             @isAvailable = isAvailable
             @isActive = isActive
         else if @isValid editor
