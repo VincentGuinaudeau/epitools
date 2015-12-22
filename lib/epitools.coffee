@@ -57,23 +57,24 @@ module.exports =
 
     # active the package if the editor have a C grammar activate
     refresh: (editor) ->
-        if @editorMap.has editor
-            {isAvailable, isActive} = @editorMap.get editor
-            @isAvailable = isAvailable
-            @isActive = isActive
-        else if @isValid editor
-            @isAvailable = @detectGrammar editor
-            @isActive = if @isAvailable then @isTurnOn editor else false
-            @editorMap.set editor,
-                isAvailable: @isAvailable
-                isActive: @isActive
+        if @isValid editor
+            if @editorMap.has editor
+                {isAvailable, isActive} = @editorMap.get editor
+                @isAvailable = isAvailable
+                @isActive = isActive
+            else
+                @isAvailable = @detectGrammar editor
+                @isActive = if @isAvailable then @isTurnOn editor else false
+                @editorMap.set editor,
+                    isAvailable: @isAvailable
+                    isActive: @isActive
         else
             @isAvailable = false
             @isActive = false
         @epitoolsStatusViewState?.set_visible @isAvailable
         @epitoolsStatusViewState?.set_active @isActive
         for i in EpitoolsModules
-            i.refresh editor, @isActive if i.refresh
+            i.refresh editor if i.refresh
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
