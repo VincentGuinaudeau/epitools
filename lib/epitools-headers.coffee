@@ -63,3 +63,9 @@ class EpitoolsHeaders
     insertHeaderCursor: ->
         editor = atom.workspace.getActivePaneItem()
         return null if (editor not instanceof TextEditor) or not @core.isActive
+        header = @generateHeader editor
+        editor.mutateSelectedText (selection, index) ->
+            if selection.getBufferRange().start.column == 0
+                selection.insertText header
+            else
+                selection.insertText '\n' + header
