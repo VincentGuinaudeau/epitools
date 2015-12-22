@@ -28,11 +28,12 @@
             "value": 4
         },
         "line_endings": {
-            "value": "unix",
-            "level": "warn"
+            "level": "ignore"
         },
         "max_line_length": {
-            "value": "120",
+            "level": "ignore"
+        },
+        "braces_spacing": {
             "level": "warn"
         }
     }
