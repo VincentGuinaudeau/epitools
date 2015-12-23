@@ -21,8 +21,11 @@ module.exports =
                     default: ''
     epitoolsStatusView: null
     subscriptions: null
-    isAvailable: null
-    isActive: null
+    currentEditor:
+        editor: null
+        disposable: null
+        available: null
+        active: null
     editorMap: null
 
     activate: (@state) ->
@@ -32,8 +35,8 @@ module.exports =
         # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
         @subscriptions = new CompositeDisposable
 
-        @subscriptions.add atom.workspace.onDidChangeActivePaneItem @refresh.bind(this)
-        @refresh atom.workspace.getActivePaneItem()
+        @subscriptions.add atom.workspace.onDidChangeActivePaneItem @changeEditor.bind(this)
+        @changeEditor atom.workspace.getActivePaneItem()
 
         # Register command
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle-available': => @toggleAvailable()
@@ -45,8 +48,8 @@ module.exports =
 
     consumeStatusBar: (statusBar) ->
         @epitoolsStatusViewState = new EpitoolsStatusView @state.epitoolsStatusViewState, statusBar
-        @epitoolsStatusViewState.set_visible @available
-        @epitoolsStatusViewState.set_active @active
+        @epitoolsStatusViewState.set_visible @currentEditor.available
+        @epitoolsStatusViewState.set_active @currentEditor.active
 
     isValid: (editor) ->
         editor instanceof TextEditor
@@ -55,26 +58,56 @@ module.exports =
         obj = @editorMap.get editor
         obj[attribute] = value
 
-    # active the package if the editor have a C grammar activate
-    refresh: (editor) ->
-        if @isValid editor
-            if @editorMap.has editor
-                {isAvailable, isActive} = @editorMap.get editor
-                @isAvailable = isAvailable
-                @isActive = isActive
-            else
-                @isAvailable = @detectGrammar editor
-                @isActive = if @isAvailable then @isTurnOn editor else false
-                @editorMap.set editor,
-                    isAvailable: @isAvailable
-                    isActive: @isActive
+    # initEditor: (editor) ->
+    #     @currentEditor.available = @detectGrammar editor
+    #     @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
+    #     @editorMap.set editor,
+    #         available: @currentEditor.available
+    #         active: @currentEditor.active
+
+    updateEditor: (grammar) ->
+        if @editorMap.has editor
+            {available, active} = @editorMap.get editor
+            @currentEditor.available = available
+            @currentEditor.active = active
         else
-            @isAvailable = false
-            @isActive = false
-        @epitoolsStatusViewState?.set_visible @isAvailable
-        @epitoolsStatusViewState?.set_active @isActive
+            @currentEditor.available = @detectGrammar editor
+            @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
+            @editorMap.set editor,
+                available: @currentEditor.available
+                active: @currentEditor.active
+        @epitoolsStatusViewState?.set_visible @currentEditor.available
+        @epitoolsStatusViewState?.set_active @currentEditor.active
         for i in EpitoolsModules
-            i.refresh editor if i.refresh
+            i.changeEditor editor if i.changeEditor
+
+    changeEditor: (editor) ->
+        @currentEditor.disposable.dispose()
+        if @isValid editor
+            @currentEditor.editor = editor
+            @currentEditor.disposable = editor.observeGrammar @updateEditor
+            console.log 'event set'
+        else
+            @currentEditor.available = false
+            @currentEditor.active = false
+        # if @isValid editor
+        #     if @editorMap.has editor
+        #         {available, active} = @editorMap.get editor
+        #         @currentEditor.available = available
+        #         @currentEditor.active = active
+        #     else
+        #         @currentEditor.available = @detectGrammar editor
+        #         @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
+        #         @editorMap.set editor,
+        #             available: @currentEditor.available
+        #             active: @currentEditor.active
+        # else
+        #     @currentEditor.available = false
+        #     @currentEditor.active = false
+        # @epitoolsStatusViewState?.set_visible @currentEditor.available
+        # @epitoolsStatusViewState?.set_active @currentEditor.active
+        # for i in EpitoolsModules
+        #     i.changeEditor editor if i.changeEditor
 
     # return true if grammar is C or Makefile
     detectGrammar: (editor) ->
@@ -93,25 +126,25 @@ module.exports =
         @epitoolsStatusView.destroy()
 
     serialize: ->
-        isAvailable: @isAvailable
-        isActive: @isActive
+        available: @currentEditor.available
+        active: @currentEditor.active
         epitoolsStatusViewState: @epitoolsStatusView.serialize()
 
     deserialize: ->
-        @isActive = @state?.isActive
-        @isActive = @state?.isActive
+        @currentEditor.active = @state?.active
+        @currentEditor.active = @state?.active
 
     toggleAvailable: (force_state = null) ->
         editor = atom.workspace.getActivePaneItem()
         return null if not @isValid editor
-        @isAvailable = if force_state is null then !@isAvailable else force_state
-        @setMap editor, 'isAvailable', @isAvailable
-        @epitoolsStatusViewState.set_active @isAvailable
+        @currentEditor.available = if force_state is null then !@currentEditor.available else force_state
+        @setMap editor, 'available', @currentEditor.available
+        @epitoolsStatusViewState.set_active @currentEditor.available
 
     toggleActivation: (force_state = null) ->
         editor = atom.workspace.getActivePaneItem()
         return null if not @isValid editor
-        if @isAvailable
-            @isActive = if force_state is null then !@isActive else force_state
-            @setMap editor, 'isActive', @isActive
-            @epitoolsStatusViewState.set_active @isActive
+        if @currentEditor.available
+            @currentEditor.active = if force_state is null then !@currentEditor.active else force_state
+            @setMap editor, 'active', @isActive
+            @epitoolsStatusViewState.set_active @currentEditor.active

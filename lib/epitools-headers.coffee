@@ -16,7 +16,7 @@ class EpitoolsHeaders
     deactivate: ->
         @subscriptions.dispose()
 
-    refresh: (editor, activate) ->
+    updateEditor: (editor) ->
 
     hasHeader: (editor) ->
         buffer = editor.getTextInBufferRange([[0, 0], [10, 0]])
@@ -56,13 +56,13 @@ class EpitoolsHeaders
 
     insertHeaderTop: ->
         editor = atom.workspace.getActivePaneItem()
-        return null if (editor not instanceof TextEditor) or not @core.isActive
+        return null if (editor not instanceof TextEditor) or not @core.currentEditor.active
         header = @generateHeader editor
         editor.setTextInBufferRange([[0, 0], [0, 0]], header)
 
     insertHeaderCursor: ->
         editor = atom.workspace.getActivePaneItem()
-        return null if (editor not instanceof TextEditor) or not @core.isActive
+        return null if (editor not instanceof TextEditor) or not @core.currentEditor.active
         header = @generateHeader editor
         editor.mutateSelectedText (selection, index) ->
             if selection.getBufferRange().start.column == 0

@@ -13,7 +13,6 @@ He could also implement some usefull behaviour :
 * check/correct indentation on save, open...
 * suggest a project name for the headers based on the others sources files in the project
 
-And maybe some crazy things like :
 
 * linter for the epitech's C standard, especially for invisible typo like space at the end of a line
 * Makefile generator and updater
@@ -25,5 +24,30 @@ If you have some ideas, feel free to open an issue.
 And don't forget : this is atom ! There is already thousand of packages, and this one only aim to supports epitech's specific requirement. So don't ask for a git support, an interface to gcc or a generic C linter, there is already packages for that out there.
 
 For now, there is no very mutch to see. but I espect to make something basic before january.
+
+## TODO list
+#### Core
+* detect TextEditor change : OK
+* detect Grammar change
+* icon show up in staus bar : OK
+* manual activation : OK
+* auto activation when detect header
+* Hide when not in C file or Makefile : OK
+
+#### Header
+* Insert on top : OK
+* Insert on cursor : OK
+* Config user info : OK
+* Update header on save
+* Detect project name
+* Ask project name
+* detect header
+
+#### Indentaion
+* correctly config the pane when actiavte (SoftTab, 2 spaces)
+* catch change in the Tab config (notification or cancel)
+* backup config to restore when turnOff
+* convert eight space to one tab on when modifiyng a line
+* Full check on save
 
 ![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
