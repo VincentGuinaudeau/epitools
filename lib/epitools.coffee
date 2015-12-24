@@ -19,10 +19,12 @@ module.exports =
                 email:
                     type: 'string'
                     default: ''
+    supportedGrammar: ['source.c', 'source.makefile']
     epitoolsStatusView: null
     subscriptions: null
     currentEditor:
         editor: null
+        grammar: null
         disposable: null
         available: null
         active: null
@@ -58,64 +60,42 @@ module.exports =
         obj = @editorMap.get editor
         obj[attribute] = value
 
-    # initEditor: (editor) ->
-    #     @currentEditor.available = @detectGrammar editor
-    #     @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
-    #     @editorMap.set editor,
-    #         available: @currentEditor.available
-    #         active: @currentEditor.active
+    refresh: ->
+        @epitoolsStatusViewState?.set_visible @currentEditor.available
+        @epitoolsStatusViewState?.set_active @currentEditor.active
+        for i in EpitoolsModules
+            i.refresh() if i.changeEditor
 
     updateEditor: (grammar) ->
+        editor = @currentEditor.editor
+        scope = null
         if @editorMap.has editor
-            {available, active} = @editorMap.get editor
+            {available, active, scope} = @editorMap.get editor
             @currentEditor.available = available
             @currentEditor.active = active
-        else
-            @currentEditor.available = @detectGrammar editor
+        if scope isnt grammar.scopeName
+            @currentEditor.available = @supportedGrammar.indexOf(grammar.scopeName) isnt -1
             @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
             @editorMap.set editor,
                 available: @currentEditor.available
                 active: @currentEditor.active
-        @epitoolsStatusViewState?.set_visible @currentEditor.available
-        @epitoolsStatusViewState?.set_active @currentEditor.active
-        for i in EpitoolsModules
-            i.changeEditor editor if i.changeEditor
+                scope: grammar.scopeName
+        @refresh()
 
     changeEditor: (editor) ->
-        @currentEditor.disposable.dispose()
+        @currentEditor.disposable?.dispose()
         if @isValid editor
+            console.log 'editor change'
             @currentEditor.editor = editor
-            @currentEditor.disposable = editor.observeGrammar @updateEditor
-            console.log 'event set'
+            @currentEditor.disposable = editor.observeGrammar @updateEditor.bind(this)
         else
-            @currentEditor.available = false
-            @currentEditor.active = false
-        # if @isValid editor
-        #     if @editorMap.has editor
-        #         {available, active} = @editorMap.get editor
-        #         @currentEditor.available = available
-        #         @currentEditor.active = active
-        #     else
-        #         @currentEditor.available = @detectGrammar editor
-        #         @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
-        #         @editorMap.set editor,
-        #             available: @currentEditor.available
-        #             active: @currentEditor.active
-        # else
-        #     @currentEditor.available = false
-        #     @currentEditor.active = false
-        # @epitoolsStatusViewState?.set_visible @currentEditor.available
-        # @epitoolsStatusViewState?.set_active @currentEditor.active
-        # for i in EpitoolsModules
-        #     i.changeEditor editor if i.changeEditor
-
-    # return true if grammar is C or Makefile
-    detectGrammar: (editor) ->
-        @scope = editor.getRootScopeDescriptor().scopes[0]
-        if ['source.c', 'source.makefile'].indexOf(@scope) isnt -1
-            @scope
-        else
-            false
+            @currentEditor =
+                editor: null
+                grammar: null
+                disposable: null
+                available: false
+                active: false
+            @refresh()
 
     isTurnOn: (editor) ->
         false # TODO : detect header, config

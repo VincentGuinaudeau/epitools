@@ -28,7 +28,7 @@ For now, there is no very mutch to see. but I espect to make something basic bef
 ## TODO list
 #### Core
 * detect TextEditor change : OK
-* detect Grammar change
+* detect Grammar change : OK
 * icon show up in staus bar : OK
 * manual activation : OK
 * auto activation when detect header

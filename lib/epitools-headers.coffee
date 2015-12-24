@@ -16,7 +16,7 @@ class EpitoolsHeaders
     deactivate: ->
         @subscriptions.dispose()
 
-    updateEditor: (editor) ->
+    refresh: ->
 
     hasHeader: (editor) ->
         buffer = editor.getTextInBufferRange([[0, 0], [10, 0]])

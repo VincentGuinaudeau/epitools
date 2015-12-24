@@ -8,8 +8,6 @@
 ** Last update Dec 22 0:46:53 2015 Vincent Guinaudeau
 */
 
-
-
 int main(int ac, char **av) {
     return (EXIT_SUCCESS);
 }
