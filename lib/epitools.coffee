@@ -85,7 +85,6 @@ module.exports =
     changeEditor: (editor) ->
         @currentEditor.disposable?.dispose()
         if @isValid editor
-            console.log 'editor change'
             @currentEditor.editor = editor
             @currentEditor.disposable = editor.observeGrammar @updateEditor.bind(this)
         else
