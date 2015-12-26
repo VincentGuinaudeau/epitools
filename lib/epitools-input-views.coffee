@@ -2,6 +2,8 @@
 
 module.exports =
 class Input extends HTMLElement
+    constructor: (@confirm) ->
+
     createdCallback: ->
         @disposables = new CompositeDisposable()
 
@@ -21,10 +23,10 @@ class Input extends HTMLElement
         @appendChild(@errorMessage)
 
         @disposables.add(atom.commands.add 'project-manager-dialog',
-            'core:confirm': () => @confirm(),
-            'core:cancel': () => @cancel()
+            'core:confirm': => @confirm(),
+            'core:cancel': => @cancel()
 
-        @editorElement.addEventListener('blur', () => @cancel())
+        @editorElement.addEventListener 'blur', => @cancel()
         @isAttached()
 
     attachedCallback: ->
