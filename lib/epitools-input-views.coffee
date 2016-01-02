@@ -2,59 +2,69 @@
 
 module.exports =
 class Input extends HTMLElement
-    constructor: (@confirm) ->
+    isRemoving: false
 
-    createdCallback: ->
-        @disposables = new CompositeDisposable()
+    constructor: (placeholder) ->
+        @element = document.createElement 'epitools-input'
+        @element.classList.add 'epitools-dialog', 'overlay', 'from-top'
 
-        @classList.add('project-manager-dialog', 'overlay', 'from-top')
+        # @label = document.createElement 'label'
+        # @label.classList.add 'epitools-dialog-label', 'icon'
 
-        @label = document.createElement('label')
-        @label.classList.add('project-manager-dialog-label', 'icon')
+        @editor = new TextEditor
+            mini: true
+        @editor.setPlaceholderText placeholder
+        @editorElement = atom.views.getView @editor
 
-        @editor = new TextEditor({mini: true})
-        @editorElement = atom.views.getView(@editor)
+        @errorMessage = document.createElement 'div'
+        @errorMessage.classList.add 'error'
 
-        @errorMessage = document.createElement('div')
-        @errorMessage.classList.add('error')
+        # @element.appendChild @label
+        @element.appendChild @editorElement
+        @element.appendChild @errorMessage
 
-        @appendChild(@label)
-        @appendChild(@editorElement)
-        @appendChild(@errorMessage)
+        @editorElement.addEventListener 'blur', @cancel.bind(this)
 
-        @disposables.add(atom.commands.add 'project-manager-dialog',
-            'core:confirm': => @confirm(),
-            'core:cancel': => @cancel()
+    getText: ->
+        @editor.getText()
 
-        @editorElement.addEventListener 'blur', => @cancel()
-        @isAttached()
+    onConfirm: ->
+        @confirm @getText()
 
-    attachedCallback: ->
-        this.editorElement.focus()
+    setConfirm: (confirm) ->
+        @confirm = confirm
 
     attach: ->
-        atom.views.getView(atom.workspace).appendChild this
+        console.log 'attach'
+        @disposable = atom.commands.add 'body',
+            'core:confirm': => @onConfirm()
+            'core:cancel': => @cancel()
+
+        atom.views.getView(atom.workspace).appendChild @element
+        @editorElement.focus()
 
     detach: ->
-        return false if this.parentNode is 'undefined' or this.parentNode is null
+        return false if (not @element.parentNode?.contains @element) or @isRemoving
 
-        this.disposables.dispose()
+        @isRemoving = true
+        @disposable.dispose()
+        @element.parentNode.removeChild @element
         atom.workspace.getActivePane().activate()
-        this.parentNode.removeChild this
+        @isRemoving = false
 
-    setLabel: (text='', iconClass) ->
-        this.label.textContent = text
-        if iconClass
-            this.label.classList.add(iconClass)
+    # setLabel: (text='', iconClass) ->
+    #     @label.textContent = text
+    #     if iconClass
+    #         @label.classList.add(iconClass)
 
     setInput: (input='', select=false) ->
-        this.editor.setText input
-        if (select) {
-            let range = [[0, 0], [0, input.length]]
-            this.editor.setSelectedBufferRange range
+        @editor.setText input
+        if (select)
+            range = [[0, 0], [0, input.length]]
+            @editor.setSelectedBufferRange range
 
     showError: (message='') ->
-        this.errorMessage.textContent message
+        @errorMessage.textContent message
 
     cancel: ->
-        this.detach()
+        @detach()

@@ -40,7 +40,7 @@ For now, there is no very mutch to see. but I espect to make something basic bef
 * Config user info : OK
 * Update header on save
 * Detect project name
-* Ask project name
+* Ask project name : OK
 * detect header
 
 #### Indentaion

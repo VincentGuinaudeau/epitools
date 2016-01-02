@@ -41,8 +41,9 @@ module.exports =
         @changeEditor atom.workspace.getActivePaneItem()
 
         # Register command
-        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle-available': => @toggleAvailable()
-        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:toggle-activation': => @toggleActivation()
+        @subscriptions.add atom.commands.add 'atom-workspace',
+            'epitools:toggle-available': => @toggleAvailable()
+            'epitools:toggle-activation': => @toggleActivation()
 
         # init modules
         for i in EpitoolsModules
