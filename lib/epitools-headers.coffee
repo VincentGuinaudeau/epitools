@@ -68,19 +68,21 @@ class EpitoolsHeaders
 
     insertHeaderTop: ->
         self = this
-        editor = @core.currentEditor.editor
-        return null if (editor not instanceof TextEditor) or not @core.currentEditor.active
+        editor = atom.workspace.getActivePaneItem()
+        return null if editor not instanceof TextEditor
         @inputView.setConfirm (input) ->
             header = self.generateHeader editor, input
             editor.setTextInBufferRange([[0, 0], [0, 0]], header)
             @detach()
+            if self.core.currentEditor.available and atom.config.get('epitools.activateHeader')
+                self.core.toggleActivation true
         @inputView.setInput @inputView.getText(), true
         @inputView.attach()
 
     insertHeaderCursor: ->
         self = this
-        editor = @core.currentEditor.editor
-        return null if (editor not instanceof TextEditor) or not @core.currentEditor.active
+        editor = atom.workspace.getActivePaneItem()
+        return null if editor not instanceof TextEditor
         @inputView.setConfirm (input) ->
             header = self.generateHeader editor, input
             editor.mutateSelectedText (selection, index) ->

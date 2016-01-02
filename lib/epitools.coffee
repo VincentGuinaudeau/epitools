@@ -19,6 +19,10 @@ module.exports =
                 email:
                     type: 'string'
                     default: ''
+        activateHeader:
+            title: 'Activate on header insertion'
+            type: 'boolean'
+            default: true
     supportedGrammar: ['source.c', 'source.makefile']
     epitoolsStatusView: null
     subscriptions: null
