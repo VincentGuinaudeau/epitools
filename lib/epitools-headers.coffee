@@ -13,9 +13,10 @@ class EpitoolsHeaders
 
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insertHeaderCursor()
+        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-test': =>
+            @hasHeader @core.currentEditor.editor
 
         @inputView = new Input 'Project Name'
-        # @inputView.setLabel 'Project name', 'icon-arrow-right'
 
     deactivate: ->
         @subscriptions.dispose()
@@ -23,7 +24,13 @@ class EpitoolsHeaders
     refresh: ->
 
     hasHeader: (editor) ->
-        buffer = editor.getTextInBufferRange([[0, 0], [10, 0]])
+        buffer = editor.getTextInBufferRange([[0, 0], [9, 0]])
+        console.log buffer
+        pattern = @generateHeader @core.currentEditor.editor, '', true
+        console.log pattern
+        regex = new RegExp '^' + pattern
+        console.log regex
+        console.log regex.test buffer
 
     generateDate: ->
         date = new Date
@@ -47,18 +54,21 @@ class EpitoolsHeaders
 
     updateHeader: (editor) ->
 
-    generateHeader: (editor, project='') ->
+    generateHeader: (editor, project='', forRegex) ->
         scope = editor.getRootScopeDescriptor().scopes[0]
         format = headersFormat.scopes[scope] or headersFormat.scopes.default
         str = format.head + '\n'
         for line in headersFormat.text
             str += format.body + ' ' + line + '\n'
         str += format.tail + '\n'
-        @replaceInfo str, editor, project
+        if forRegex
+            str.replace(/[\*\\]/g, '\\$&').replace(/\$[A-Z_]*/g, '.*')
+        else
+            @replaceInfo str, editor, project
 
     insertHeaderTop: ->
         self = this
-        editor = atom.workspace.getActivePaneItem()
+        editor = @core.currentEditor.editor
         return null if (editor not instanceof TextEditor) or not @core.currentEditor.active
         @inputView.setConfirm (input) ->
             header = self.generateHeader editor, input
@@ -69,7 +79,7 @@ class EpitoolsHeaders
 
     insertHeaderCursor: ->
         self = this
-        editor = atom.workspace.getActivePaneItem()
+        editor = @core.currentEditor.editor
         return null if (editor not instanceof TextEditor) or not @core.currentEditor.active
         @inputView.setConfirm (input) ->
             header = self.generateHeader editor, input

@@ -23,9 +23,9 @@
             "tail": "##"
         },
         "default": {
-            "head": "  ",
-            "body": "  ",
-            "tail": "  "
+            "head": "#",
+            "body": "#",
+            "tail": "#"
         }
     }
 }
