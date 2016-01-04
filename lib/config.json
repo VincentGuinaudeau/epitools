@@ -1,0 +1,31 @@
+{
+        "headers": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "default": "",
+                    "description": "format : Firstname Name"
+                },
+                "login": {
+                    "type": "string",
+                    "default": ""
+                },
+                "email": {
+                    "type": "string",
+                    "default": ""
+                }
+            }
+        },
+        "activateHeader": {
+            "title": "Activate on header insertion",
+            "type": "boolean",
+            "default": true
+        },
+        "autoActivation": {
+            "title": "Auto-activation",
+            "type": "string",
+            "enum": ["never", "if header", "always"],
+            "default": "if header"
+        }
+}

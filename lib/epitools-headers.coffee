@@ -37,17 +37,20 @@ class EpitoolsHeaders
                         buffer.setTextInRange [[line, 0], [line + 1, 0]], header[line] + '\n'
             func()
 
+    deactivate: ->
+        @subscriptions.dispose()
+
+    refresh: ->
+
+    isSupported: (scope) ->
+        headersFormat.scopes[scope] && scope != 'default'
+
     extractHeaderType: (buffer) ->
         buffer = buffer.getTextInRange([[0, 0], [9, 0]])
         for scope of headersFormat.scopes
             if headersFormat.scopes[scope].regex.test buffer
                 return scope
         return false
-
-    deactivate: ->
-        @subscriptions.dispose()
-
-    refresh: ->
 
     hasHeader: (editor) ->
         buffer = editor.getTextInBufferRange([[0, 0], [9, 0]])
