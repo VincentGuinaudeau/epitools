@@ -35,7 +35,6 @@ class Input extends HTMLElement
         @confirm = confirm
 
     attach: ->
-        console.log 'attach'
         @disposable = atom.commands.add 'body',
             'core:confirm': => @onConfirm()
             'core:cancel': => @cancel()

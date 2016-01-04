@@ -8,7 +8,7 @@
         "Started on  $DATE $USER_NAME",
         "Last update $DATE $USER_NAME"
     ],
-    "updateLine": 7,
+    "updateLines": [2, 5, 7],
     "datesFormat": "MM DD HH:MI:SS YYYY",
     "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     "scopes": {

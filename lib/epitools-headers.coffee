@@ -7,16 +7,42 @@ module.exports =
 class EpitoolsHeaders
     core: null
     inputView: null
+    bufferMap: null
 
     activate: (state, @core) ->
         @subscriptions = new CompositeDisposable
+        @bufferMap = new WeakMap
+        @inputView = new Input 'Project Name'
 
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insertHeaderCursor()
-        @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-test': =>
-            @hasHeader @core.currentEditor.editor
 
-        @inputView = new Input 'Project Name'
+        for scope of headersFormat.scopes
+            headersFormat.scopes[scope].regex = new RegExp '^' + @generateHeader scope, '', true
+        console.log headersFormat.scopes
+
+        atom.workspace.observeTextEditors (editor) =>
+            self = this
+            buffer = editor.getBuffer()
+            func = ->
+                return if self.bufferMap.has buffer
+                self.bufferMap.set buffer, buffer.onWillSave ->
+                    scope = self.extractHeaderType buffer
+                    console.log scope
+                    return if not scope
+                    header = self.generateHeader scope, ''
+                    header = header.split '\n'
+                    console.log buffer
+                    for line in headersFormat.updateLines
+                        buffer.setTextInRange [[line, 0], [line + 1, 0]], header[line] + '\n'
+            func()
+
+    extractHeaderType: (buffer) ->
+        buffer = buffer.getTextInRange([[0, 0], [9, 0]])
+        for scope of headersFormat.scopes
+            if headersFormat.scopes[scope].regex.test buffer
+                return scope
+        return false
 
     deactivate: ->
         @subscriptions.dispose()
@@ -25,12 +51,8 @@ class EpitoolsHeaders
 
     hasHeader: (editor) ->
         buffer = editor.getTextInBufferRange([[0, 0], [9, 0]])
-        console.log buffer
-        pattern = @generateHeader @core.currentEditor.editor, '', true
-        console.log pattern
-        regex = new RegExp '^' + pattern
-        console.log regex
-        console.log regex.test buffer
+        regex = headersFormat.scopes[editor.getRootScopeDescriptor().scopes[0]].regex or headersFormat.scopes.default.regex
+        regex.test buffer
 
     generateDate: ->
         date = new Date
@@ -43,7 +65,10 @@ class EpitoolsHeaders
             .replace /SS/g, date.getSeconds()
 
     replaceInfo: (header, editor, project) ->
-        filePath = editor.getBuffer().getPath()
+        if typeof editor is 'string'
+            filePath = './'
+        else
+            filePath = editor.getBuffer().getPath()
         header.replace /\$FILE_NAME/g, path.basename filePath
             .replace /\$PATH/g, path.dirname filePath
             .replace /\$PROJECT/g, project
@@ -52,17 +77,19 @@ class EpitoolsHeaders
             .replace /\$USER_EMAIL/g, atom.config.get('epitools.headers.email') or ''
             .replace /\$DATE/g, @generateDate()
 
-    updateHeader: (editor) ->
-
     generateHeader: (editor, project='', forRegex) ->
-        scope = editor.getRootScopeDescriptor().scopes[0]
+        if typeof editor is 'string'
+            scope = editor
+        else
+            scope = editor.getRootScopeDescriptor().scopes[0]
         format = headersFormat.scopes[scope] or headersFormat.scopes.default
         str = format.head + '\n'
         for line in headersFormat.text
             str += format.body + ' ' + line + '\n'
-        str += format.tail + '\n'
+        str += format.tail
+        str += '\n' if not forRegex
         if forRegex
-            str.replace(/[\*\\]/g, '\\$&').replace(/\$[A-Z_]*/g, '.*')
+            str.replace(/[\*\\]/g, '\\$&').replace(/\$[A-Z_]*/g, '.*').replace(/() \n/g, ' ?\n')
         else
             @replaceInfo str, editor, project
 

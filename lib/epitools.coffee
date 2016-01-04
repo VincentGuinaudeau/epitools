@@ -1,7 +1,6 @@
 EpitoolsStatusView = require './epitools-status-view'
-EpitoolsModules = [
-    new (require './epitools-headers')()
-]
+EpitoolsModules =
+    header: new (require './epitools-headers')()
 {CompositeDisposable, TextEditor} = require 'atom'
 
 module.exports =
@@ -23,6 +22,11 @@ module.exports =
             title: 'Activate on header insertion'
             type: 'boolean'
             default: true
+        autoActivation:
+            title: 'Auto-activation'
+            type: 'string'
+            enum: ['never', 'if header', 'always']
+            default: 'if header'
     supportedGrammar: ['source.c', 'source.makefile']
     epitoolsStatusView: null
     subscriptions: null
@@ -37,6 +41,10 @@ module.exports =
     activate: (@state) ->
         @editorMap = new WeakMap
         @deserialize()
+        
+        # init modules
+        for i of EpitoolsModules
+            EpitoolsModules[i].activate @state[i], this
 
         # Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
         @subscriptions = new CompositeDisposable
@@ -48,10 +56,6 @@ module.exports =
         @subscriptions.add atom.commands.add 'atom-workspace',
             'epitools:toggle-available': => @toggleAvailable()
             'epitools:toggle-activation': => @toggleActivation()
-
-        # init modules
-        for i in EpitoolsModules
-            i.activate @state[i], this
 
     consumeStatusBar: (statusBar) ->
         @epitoolsStatusViewState = new EpitoolsStatusView @state.epitoolsStatusViewState, statusBar
@@ -68,8 +72,8 @@ module.exports =
     refresh: ->
         @epitoolsStatusViewState?.set_visible @currentEditor.available
         @epitoolsStatusViewState?.set_active @currentEditor.active
-        for i in EpitoolsModules
-            i.refresh() if i.changeEditor
+        for i of EpitoolsModules
+            EpitoolsModules[i].refresh() if EpitoolsModules[i].refresh
 
     updateEditor: (grammar) ->
         editor = @currentEditor.editor
@@ -102,7 +106,10 @@ module.exports =
             @refresh()
 
     isTurnOn: (editor) ->
-        false # TODO : detect header, config
+        switch atom.config.get('epitools.autoActivation')
+            when 'always' then return true
+            when 'never' then return false
+            when 'if header' then return EpitoolsModules.header.hasHeader editor
 
     deactivate: ->
         @subscriptions.dispose()

@@ -31,17 +31,18 @@ For now, there is no very mutch to see. but I espect to make something basic bef
 * detect Grammar change : OK
 * icon show up in staus bar : OK
 * manual activation : OK
-* auto activation when detect header
+* auto activation when detect header : OK
 * Hide when not in C file or Makefile : OK
 
 #### Header
 * Insert on top : OK
 * Insert on cursor : OK
 * Config user info : OK
-* Update header on save
+* prevent modification of header on save : OK
+* Update header on save : OK
 * Detect project name
 * Ask project name : OK
-* detect header
+* detect header : OK
 
 #### Indentaion
 * correctly config the pane when actiavte (SoftTab, 2 spaces)
