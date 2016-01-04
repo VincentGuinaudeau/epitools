@@ -29,7 +29,7 @@ For now, there is no very mutch to see. but I espect to make something basic bef
 #### Core
 * detect TextEditor change : OK
 * detect Grammar change : OK
-* icon show up in staus bar : OK
+* icon show up in status bar : OK
 * manual activation : OK
 * auto activation when detect header : OK
 * Hide when not in C file or Makefile : OK
@@ -44,11 +44,11 @@ For now, there is no very mutch to see. but I espect to make something basic bef
 * Ask project name : OK
 * detect header : OK
 
-#### Indentaion
-* correctly config the pane when actiavte (SoftTab, 2 spaces)
+#### Indentation
+* correctly config the panel when activate (SoftTab, 2 spaces)
 * catch change in the Tab config (notification or cancel)
 * backup config to restore when turnOff
-* convert eight space to one tab on when modifiyng a line
+* convert eight space to one tab when modifying a line
 * Full check on save
 
 ![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
