@@ -41,7 +41,7 @@ module.exports =
     activate: (@state) ->
         @editorMap = new WeakMap
         @deserialize()
-        
+
         # init modules
         for i of EpitoolsModules
             EpitoolsModules[i].activate @state[i], this
