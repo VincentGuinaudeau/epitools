@@ -21,20 +21,29 @@ class EpitoolsHeaders
             headersFormat.scopes[scope].regex = new RegExp '^' + @generateHeader scope, '', true
         console.log headersFormat.scopes
 
+        # update header on save and prevent modification
         atom.workspace.observeTextEditors (editor) =>
             self = this
             buffer = editor.getBuffer()
             func = ->
                 return if self.bufferMap.has buffer
-                self.bufferMap.set buffer, buffer.onWillSave ->
-                    scope = self.extractHeaderType buffer
-                    console.log scope
-                    return if not scope
-                    header = self.generateHeader scope, ''
-                    header = header.split '\n'
-                    console.log buffer
-                    for line in headersFormat.updateLines
-                        buffer.setTextInRange [[line, 0], [line + 1, 0]], header[line] + '\n'
+                disposable = null
+                self.bufferMap.set buffer,
+                    will: buffer.onWillSave ->
+                        scope = self.extractHeaderType buffer
+                        return if not scope
+                        header = self.generateHeader scope, ''
+                        header = header.split '\n'
+                        # console.log buffer.getText()
+                        # console.log editor
+                        for line in headersFormat.updateLines
+                            # console.log header[line]
+                            buffer.setTextInRange [[line, 0], [line + 1, 0]], header[line] + '\n'
+                    # did: buffer.onDidSave ->
+                    #     if disposable
+                    #         console.log 'did save'
+                    #         disposable.dispose()
+                    #         disposable = null
             func()
 
     deactivate: ->
@@ -43,7 +52,7 @@ class EpitoolsHeaders
     refresh: ->
 
     isSupported: (scope) ->
-        headersFormat.scopes[scope] && scope != 'default'
+        headersFormat.scopes[scope] && scope isnt 'default'
 
     extractHeaderType: (buffer) ->
         buffer = buffer.getTextInRange([[0, 0], [9, 0]])

@@ -45,7 +45,7 @@ For now, there is no very mutch to see. but I espect to make something basic bef
 * detect header : OK
 
 #### Indentaion
-* correctly config the pane when actiavte (SoftTab, 2 spaces)
+* correctly config the pane when actiavte
 * catch change in the Tab config (notification or cancel)
 * backup config to restore when turnOff
 * convert eight space to one tab on when modifiyng a line

@@ -66,7 +66,7 @@ module.exports =
             @currentEditor.available = available
             @currentEditor.active = active
         if scope isnt grammar.scopeName
-            @currentEditor.available = EpitoolsModules.header.isSupported scope
+            @currentEditor.available = EpitoolsModules.header.isSupported grammar.scopeName
             @currentEditor.active = if @currentEditor.available then @isTurnOn editor else false
             @editorMap.set editor,
                 available: @currentEditor.available
