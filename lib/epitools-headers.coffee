@@ -15,8 +15,6 @@ class EpitoolsHeaders
         @inputView = new Input 'Project Name'
         headersFormat.headerRange = new Range [0, 0], [headersFormat.text.length + 2, 0]
 
-        console.log headersFormat.headerRange
-
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insertHeaderCursor()
 
@@ -36,20 +34,15 @@ class EpitoolsHeaders
                         return if not scope
                         header = self.generateHeader scope, ''
                         header = header.split '\n'
-                        # console.log buffer.getText()
-                        # console.log editor
                         for line in headersFormat.updateLines
-                            # console.log header[line]
                             buffer.setTextInRange [[line, 0], [line + 1, 0]], header[line] + '\n'
                         disposable = buffer.onDidChange (event) ->
-                            console.log event
                             if event.oldRange.start.row <= headersFormat.headerRange.end.row &&
                             event.oldText is ' ' &&
                             event.newText is ''
                                 buffer.setTextInRange event.newRange, event.oldText
                     did: buffer.onDidSave ->
                         if disposable
-                            console.log 'did save'
                             disposable.dispose()
                             disposable = null
             func()
