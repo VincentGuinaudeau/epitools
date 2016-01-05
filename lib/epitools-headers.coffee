@@ -1,4 +1,4 @@
-{CompositeDisposable, TextEditor} = require 'atom'
+{CompositeDisposable, TextEditor, Range} = require 'atom'
 path = require 'path'
 headersFormat = require './headers-format.json'
 Input = require './epitools-input-views'
@@ -13,13 +13,15 @@ class EpitoolsHeaders
         @subscriptions = new CompositeDisposable
         @bufferMap = new WeakMap
         @inputView = new Input 'Project Name'
+        headersFormat.headerRange = new Range [0, 0], [headersFormat.text.length + 2, 0]
+
+        console.log headersFormat.headerRange
 
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insertHeaderCursor()
 
         for scope of headersFormat.scopes
             headersFormat.scopes[scope].regex = new RegExp '^' + @generateHeader scope, '', true
-        console.log headersFormat.scopes
 
         # update header on save and prevent modification
         atom.workspace.observeTextEditors (editor) =>
@@ -39,11 +41,17 @@ class EpitoolsHeaders
                         for line in headersFormat.updateLines
                             # console.log header[line]
                             buffer.setTextInRange [[line, 0], [line + 1, 0]], header[line] + '\n'
-                    # did: buffer.onDidSave ->
-                    #     if disposable
-                    #         console.log 'did save'
-                    #         disposable.dispose()
-                    #         disposable = null
+                        disposable = buffer.onDidChange (event) ->
+                            console.log event
+                            if event.oldRange.start.row <= headersFormat.headerRange.end.row &&
+                            event.oldText is ' ' &&
+                            event.newText is ''
+                                buffer.setTextInRange event.newRange, event.oldText
+                    did: buffer.onDidSave ->
+                        if disposable
+                            console.log 'did save'
+                            disposable.dispose()
+                            disposable = null
             func()
 
     deactivate: ->
@@ -55,14 +63,14 @@ class EpitoolsHeaders
         headersFormat.scopes[scope] && scope isnt 'default'
 
     extractHeaderType: (buffer) ->
-        buffer = buffer.getTextInRange([[0, 0], [9, 0]])
+        buffer = buffer.getTextInRange(headersFormat.headerRange)
         for scope of headersFormat.scopes
             if headersFormat.scopes[scope].regex.test buffer
                 return scope
         return false
 
     hasHeader: (editor) ->
-        buffer = editor.getTextInBufferRange([[0, 0], [9, 0]])
+        buffer = editor.getTextInBufferRange(headersFormat.headerRange)
         regex = headersFormat.scopes[editor.getRootScopeDescriptor().scopes[0]].regex or headersFormat.scopes.default.regex
         regex.test buffer
 

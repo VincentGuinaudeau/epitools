@@ -1,6 +1,7 @@
 EpitoolsStatusView = require './epitools-status-view'
 EpitoolsModules =
     header: new (require './epitools-headers')()
+    indentation: new (require './epitools-indentation')()
 {CompositeDisposable, TextEditor} = require 'atom'
 
 module.exports =

@@ -1,11 +1,11 @@
 ##
 ## Makefile for project in /home/guinau_v/github/epitools/test
-##
+## 
 ## Made by Vincent Guinaudeau
 ## Login  guinau_v <vincent.guinaudeau@epitech.eu>
-##
+## 
 ## Started on  Dec 22 15:20:59 2015 Vincent Guinaudeau
-## Last update Jan 4 12:33:42 2016 Vincent Guinaudeau
+## Last update Jan 5 14:21:21 2016 Vincent Guinaudeau
 ##
 
 NAME	= a.out
