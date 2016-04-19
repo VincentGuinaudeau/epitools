@@ -14,6 +14,7 @@ class EpitoolsHeaders
         @bufferMap = new WeakMap
         @inputView = new Input 'Project Name'
 
+        @core.supportedGrammar = Object.keys(headersFormat.scopes).filter((e) -> e != 'default')
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-top': => @insertHeaderTop()
         @subscriptions.add atom.commands.add 'atom-workspace', 'epitools:header-cursor': => @insertHeaderCursor()
 
