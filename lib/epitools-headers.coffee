@@ -61,9 +61,9 @@ class EpitoolsHeaders
         format.replace /MM/g, headersFormat.monthNames[date.getMonth()]
             .replace /DD/g, date.getDate()
             .replace /YYYY/g, date.getFullYear()
-            .replace /HH/g, date.getHours()
-            .replace /MI/g, date.getMinutes()
-            .replace /SS/g, date.getSeconds()
+            .replace /HH/g, ('0' + date.getHours()).slice(-2)
+            .replace /MI/g, ('0' + date.getMinutes()).slice(-2)
+            .replace /SS/g, ('0' + date.getSeconds()).slice(-2)
 
     replaceInfo: (header, editor, project) ->
         if typeof editor is 'string'
