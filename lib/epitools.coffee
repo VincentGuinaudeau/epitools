@@ -27,7 +27,7 @@ module.exports =
             type: 'string'
             enum: ['never', 'if header', 'always']
             default: 'if header'
-    supportedGrammar: ['source.c', 'source.makefile']
+    supportedGrammar: ['source.c', 'source.makefile'] # override by header module
     epitoolsStatusView: null
     subscriptions: null
     currentEditor:

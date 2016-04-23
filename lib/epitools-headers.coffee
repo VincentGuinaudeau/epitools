@@ -59,6 +59,7 @@ class EpitoolsHeaders
         date = new Date
         format = headersFormat.datesFormat
         format.replace /MM/g, headersFormat.monthNames[date.getMonth()]
+            .replace /DN/g, headersFormat.monthNames[date.getDay()]
             .replace /DD/g, date.getDate()
             .replace /YYYY/g, date.getFullYear()
             .replace /HH/g, ('0' + date.getHours()).slice(-2)

@@ -9,7 +9,8 @@
         "Last update $DATE $USER_NAME"
     ],
     "updateLines": [2, 5, 7],
-    "datesFormat": "MM DD HH:MI:SS YYYY",
+    "datesFormat": "DN MM DD HH:MI:SS YYYY",
+    "dayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     "scopes": {
         "source.c": {
